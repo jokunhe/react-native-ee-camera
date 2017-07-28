@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import {
   StyleSheet,
   Text,
-  View
+  View,
+  ToastAndroid
 } from 'react-native';
 
 export default class Result extends Component {
@@ -13,25 +14,17 @@ export default class Result extends Component {
         }
         
     }
-    static navigationOptions = ({navigation,screenProps}) => ({
-        // 这里面的属性和App.js的navigationOptions是一样的。
-        headerTitle:navigation.state.params?navigation.state.params.headerTitle:'Detail1',
-        headerRight:(
-            <Text style={{color:'red',marginRight:20}} onPress={()=>navigation.state.params?navigation.state.params.navigatePress():null}>我的</Text>
-        ),
-    });
-
-    componentDidMount(){
-        // 通过在componentDidMount里面设置setParams将title的值动态修改
-        this.props.navigation.setParams({
-            headerTitle:'Detail1',
-            navigatePress:this.navigatePress,
+    emptys(){
+        this.setState({
+            jieguo:[]
         });
+        this.props.navigation.setParams({
+        Scanresults:[]
+    });
+         ToastAndroid.show('清理完毕~',ToastAndroid.SHORT)
     }
 
-    navigatePress = () => {
-        alert('点击headerRight');
-    }
+    
     componentWillMount(){
       this.setState({
             jieguo:this.props.navigation.state.params.Scanresults,
@@ -40,13 +33,20 @@ export default class Result extends Component {
     ResultData(){
         let temp = []
         data =this.state.jieguo;
+        if(data.length<1){
+            temp.push(
+            <View key={1}>
+            <Text key={1}>没有添加任何数据</Text>
+            </View>
+            )
+        }else{
         for(var key in data){
             temp.push(
             <View  key={key}>
             <Text key={key}> {data[key]}</Text>
             </View>
             )
-        }
+        }}
         return temp;
     }
   render() {
@@ -57,6 +57,7 @@ export default class Result extends Component {
           扫描出来的仓库中有的数据如下
         </Text>
           {this.ResultData()}
+          <Text style={styles.welcome}  onPress={()=>{this.emptys()}}>清空所有数据</Text>
       </View>
     );
   }
@@ -73,10 +74,5 @@ const styles = StyleSheet.create({
     fontSize: 20,
     textAlign: 'center',
     margin: 10,
-  },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
-  },
+  }
 });
